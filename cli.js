@@ -7,7 +7,7 @@ import minimist from 'minimist';
 
 //-h command + exit at the end
 const args = minimist(process.argv.slice(2));
-if (args[0] == '-h') {
+if (args.h) {
 	console.log("Usage: galosh.js [options] -[n|s] LATITUDE -[e|w] LONGITUDE -z TIME_ZONE")
 	console.log("-h           Show this help message and exit.")
 	console.log("-n, -s        Latitude: N positive; S negative.")
@@ -19,27 +19,9 @@ if (args[0] == '-h') {
 }
 
 
-let timezone = "";
-if (!args.z) {
-	timezone = moment.tz.guess();
-} else {
-	timezone = args.z;
-}
-
-
-let lat = 0;
-if (args.n) {
-	lat = args.n;
-} else if (args.s) {
-	lat = args.s / -1;
-}
-
-let lon = 0;
-if (args.w) {
-	lon = args.w;
-} else if (args.e) {
-	lon = args.e / -1;
-}
+let timezone = moment.tz.guess();
+let latitude = args.n || args.s * -1;
+let longitude = args.e || args.w * -1;
 
 //url
 const url = "https://api.open-meteo.com/v1/forecast?" + "latitude=" + lat + "&longitude=" + lon + "&daily=precipitation_sum,precipitation_hours&timezone=" + timezone;
@@ -58,27 +40,21 @@ if (args.j) {
 
 
 const days = args.d;
-if (days == 0) {
-	if (data.daily.precipitation_hours[days] == 0) {
-		console.log("You will not need your galoshes today.");
-	} else {
-		console.log("You might need your galoshes today.");
-	}
-	console.log(" today.")
-	process.exit(0)
-} else if (days > 1) {
-	if (data.daily.precipitation_hours[days] == 0) {
-		console.log("You will not need your galoshes");
-	} else {
-		console.log("You might need your galoshes");
-	}
-	console.log(" in" + days + " days");
-} else if (days==1){
-	if (data.daily.precipitation_hours[days] == 0) {
-		console.log("You will not need your galoshes tomorrow.");
-	} else {
-		console.log("You might need your galoshes tomorrow.");
-	}
-	console.log(" tomorrow.")
+
+//do I need my galosh?
+if (data.daily.precipitation_hours[days] == 0) {
+	console.log("You will not need your galoshes today. ")
+} else {
+	console.log("You might need your galoshes today.")
 }
+
+//displays the correct of days
+if (days == 0) {
+	console.log("today.")
+} else if (days > 1) {
+	console.log("in " + days + " days.")
+} else {
+	console.log("tomorrow.")
+}
+
 process.exit(0);
