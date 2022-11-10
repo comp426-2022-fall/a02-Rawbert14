@@ -20,8 +20,9 @@ if (args.h) {
 
 
 let timezone = moment.tz.guess();
-let latitude = args.n || args.s * -1;
-let longitude = args.e || args.w * -1;
+let lon = args.e || args.w * -1;
+let lat = args.n || args.s * -1;
+
 
 //url
 const url = "https://api.open-meteo.com/v1/forecast?" + "latitude=" + lat + "&longitude=" + lon + "&daily=precipitation_sum,precipitation_hours&timezone=" + timezone;
